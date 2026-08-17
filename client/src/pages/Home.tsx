@@ -2,7 +2,7 @@
  * Diseño: Casa criolla contemporánea — modernismo tropical editorial.
  * Esta página prioriza la mesa compartida, una composición asimétrica y la paleta Añil de Patio, terracota e marfil.
  */
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   ArrowDownRight,
   ArrowUpRight,
@@ -54,6 +54,39 @@ const categories: { id: MenuCategory; icon: typeof UtensilsCrossed }[] = [
   { id: "Postres", icon: Leaf },
 ];
 
+const gallerySlides = [
+  {
+    image: "/manus-storage/la-habana-criolla-hero_82bafe20.jpg",
+    eyebrow: "La mesa",
+    title: "Todo empieza cuando llega el primer plato.",
+    alt: "Mesa criolla cubana con ropa vieja, arroz congrí y tostones",
+  },
+  {
+    image: "https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=1500&q=85",
+    eyebrow: "Ropa vieja",
+    title: "Fuego lento, hambre contenta.",
+    alt: "Plato colorido de cocina casera servido en mesa",
+  },
+  {
+    image: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1500&q=85",
+    eyebrow: "Para compartir",
+    title: "Un centro de mesa que pide otra ronda.",
+    alt: "Mesa abundante con varios platos para compartir",
+  },
+  {
+    image: "https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=1500&q=85",
+    eyebrow: "De la casa",
+    title: "El plato que se reconoce con los ojos cerrados.",
+    alt: "Plato principal servido con ingredientes frescos",
+  },
+  {
+    image: "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=1500&q=85",
+    eyebrow: "La sobremesa",
+    title: "Quédate cinco minutos más.",
+    alt: "Ambiente cálido de restaurante con mesas preparadas",
+  },
+];
+
 const scrollToSection = (id: string) => {
   document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
 };
@@ -61,6 +94,20 @@ const scrollToSection = (id: string) => {
 export default function Home() {
   const [activeCategory, setActiveCategory] = useState<MenuCategory>("Entrantes");
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [galleryIndex, setGalleryIndex] = useState(0);
+  const [galleryPaused, setGalleryPaused] = useState(false);
+
+  useEffect(() => {
+    if (galleryPaused) return;
+    const timer = window.setInterval(() => {
+      setGalleryIndex((current) => (current + 1) % gallerySlides.length);
+    }, 5600);
+    return () => window.clearInterval(timer);
+  }, [galleryPaused]);
+
+  const moveGallery = (direction: number) => {
+    setGalleryIndex((current) => (current + direction + gallerySlides.length) % gallerySlides.length);
+  };
 
   const handleReservation = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -83,6 +130,7 @@ export default function Home() {
         <nav className={`main-nav ${mobileOpen ? "is-open" : ""}`}>
           <a href="#cocina" onClick={() => setMobileOpen(false)}>La cocina</a>
           <a href="#carta" onClick={() => setMobileOpen(false)}>La carta</a>
+          <a href="#galeria" onClick={() => setMobileOpen(false)}>Galería</a>
           <a href="#historia" onClick={() => setMobileOpen(false)}>La casa</a>
           <a href="#visitanos" onClick={() => setMobileOpen(false)}>Visítanos</a>
         </nav>
@@ -179,6 +227,52 @@ export default function Home() {
             <div className="menu-image-card">
               <img src="https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=1100&q=85" alt="Ropa vieja con arroz congrí y tostones" loading="lazy" />
               <div className="menu-image-overlay"><span>Lo que huele<br />a casa.</span><ArrowUpRight size={20} /></div>
+            </div>
+          </div>
+        </section>
+
+        <section id="galeria" className="gallery-section section-padding">
+          <div className="gallery-intro">
+            <p className="eyebrow"><span className="eyebrow-line" /> La mesa en imágenes</p>
+            <h2>Lo que llega al centro <i>se comparte.</i></h2>
+            <p>Ambiente, fuego y platos que ya tienen sus propios fans. Desliza para mirar lo que está saliendo de la cocina.</p>
+            <div className="gallery-count" aria-live="polite"><strong>{String(galleryIndex + 1).padStart(2, "0")}</strong><span>/ {String(gallerySlides.length).padStart(2, "0")}</span></div>
+          </div>
+          <div className="gallery-rail">
+            <div
+              className="gallery-viewport"
+              role="region"
+              aria-roledescription="carrusel"
+              aria-label="Galería de ambiente y platos populares"
+              tabIndex={0}
+              onMouseEnter={() => setGalleryPaused(true)}
+              onMouseLeave={() => setGalleryPaused(false)}
+              onFocus={() => setGalleryPaused(true)}
+              onBlur={() => setGalleryPaused(false)}
+              onKeyDown={(event) => {
+                if (event.key === "ArrowRight") moveGallery(1);
+                if (event.key === "ArrowLeft") moveGallery(-1);
+              }}
+            >
+              <div className="gallery-track" style={{ transform: `translateX(-${galleryIndex * 100}%)` }}>
+                {gallerySlides.map((slide, index) => (
+                  <figure className="gallery-slide" key={slide.title} aria-hidden={galleryIndex !== index}>
+                    <img src={slide.image} alt={slide.alt} loading={index === 0 ? "eager" : "lazy"} decoding="async" />
+                    <figcaption><span>{slide.eyebrow}</span><strong>{slide.title}</strong></figcaption>
+                    <span className="gallery-slide-index">0{index + 1}</span>
+                  </figure>
+                ))}
+              </div>
+              <button className="gallery-arrow gallery-arrow-prev" type="button" aria-label="Imagen anterior" onClick={() => moveGallery(-1)}><ArrowDownRight size={20} /></button>
+              <button className="gallery-arrow gallery-arrow-next" type="button" aria-label="Imagen siguiente" onClick={() => moveGallery(1)}><ArrowUpRight size={20} /></button>
+            </div>
+            <div className="gallery-controls">
+              <div className="gallery-dots" role="tablist" aria-label="Seleccionar imagen de la galería">
+                {gallerySlides.map((slide, index) => (
+                  <button key={slide.title} type="button" role="tab" aria-label={`Ver imagen ${index + 1}: ${slide.eyebrow}`} aria-selected={galleryIndex === index} className={galleryIndex === index ? "is-active" : ""} onClick={() => setGalleryIndex(index)} />
+                ))}
+              </div>
+              <span>Usa las flechas o desliza para explorar</span>
             </div>
           </div>
         </section>
