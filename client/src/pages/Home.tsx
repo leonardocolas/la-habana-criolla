@@ -25,26 +25,26 @@ import { toast } from "sonner";
 type MenuCategory = "Entrantes" | "Fuertes" | "Bebidas" | "Postres";
 type DietaryProfile = "vegan" | "diabetes" | "hypertension";
 
-const menuItems: Record<MenuCategory, { name: string; description: string; price: string; note?: string }[]> = {
+const menuItems: Record<MenuCategory, { name: string; description: string; price: string; note?: string; image: string; alt: string }[]> = {
   Entrantes: [
-    { name: "Tostones de la casa", description: "Plátano verde, ajo, limón y sal de patio.", price: "$8", note: "para compartir" },
-    { name: "Yuca con mojo", description: "Yuca tierna, mojo de naranja agria y hierbas frescas.", price: "$7" },
-    { name: "Croquetas de jamón", description: "Bechamel cremosa, jamón curado y migas de pan doradas.", price: "$9" },
+    { name: "Tostones de la casa", description: "Plátano verde, ajo, limón y sal de patio.", price: "$8", note: "para compartir", image: "https://images.unsplash.com/photo-1601050690597-df0568f70950?auto=format&fit=crop&w=240&q=80", alt: "Tostones dorados servidos para compartir" },
+    { name: "Yuca con mojo", description: "Yuca tierna, mojo de naranja agria y hierbas frescas.", price: "$7", image: "https://images.unsplash.com/photo-1473093295043-cdd812d0e601?auto=format&fit=crop&w=240&q=80", alt: "Plato de yuca y vegetales con hierbas frescas" },
+    { name: "Croquetas de jamón", description: "Bechamel cremosa, jamón curado y migas de pan doradas.", price: "$9", image: "https://images.unsplash.com/photo-1551183053-bf91a1d81141?auto=format&fit=crop&w=240&q=80", alt: "Bocados crujientes de cocina casera" },
   ],
   Fuertes: [
-    { name: "Ropa vieja", description: "Res cocida a fuego lento, tomate, pimientos y especias dulces.", price: "$18", note: "receta de la casa" },
-    { name: "Lechón asado", description: "Cerdo marinado en naranja agria, ajo y orégano criollo.", price: "$19" },
-    { name: "Arroz congrí con vegetales", description: "Frijol negro, arroz, plátano maduro y ensalada de temporada.", price: "$15", note: "sin carne" },
+    { name: "Ropa vieja", description: "Res cocida a fuego lento, tomate, pimientos y especias dulces.", price: "$18", note: "receta de la casa", image: "https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=240&q=80", alt: "Plato principal de carne deshebrada con verduras" },
+    { name: "Lechón asado", description: "Cerdo marinado en naranja agria, ajo y orégano criollo.", price: "$19", image: "https://images.unsplash.com/photo-1600891964092-4316c288032e?auto=format&fit=crop&w=240&q=80", alt: "Carne asada servida en un plato de restaurante" },
+    { name: "Arroz congrí con vegetales", description: "Frijol negro, arroz, plátano maduro y ensalada de temporada.", price: "$15", note: "sin carne", image: "https://images.unsplash.com/photo-1512058564366-18510be2db19?auto=format&fit=crop&w=240&q=80", alt: "Arroz con vegetales y acompañamientos frescos" },
   ],
   Bebidas: [
-    { name: "Guarapo con limón", description: "Caña de azúcar recién prensada, hielo y cítrico.", price: "$6" },
-    { name: "Mojito de la casa", description: "Ron blanco, hierbabuena, lima y azúcar demerara.", price: "$11" },
-    { name: "Café cubano", description: "Espresso corto, intenso y servido al momento.", price: "$4" },
+    { name: "Guarapo con limón", description: "Caña de azúcar recién prensada, hielo y cítrico.", price: "$6", image: "https://images.unsplash.com/photo-1544145945-f90425340c7e?auto=format&fit=crop&w=240&q=80", alt: "Bebida fresca servida con cítricos y hielo" },
+    { name: "Mojito de la casa", description: "Ron blanco, hierbabuena, lima y azúcar demerara.", price: "$11", image: "https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?auto=format&fit=crop&w=240&q=80", alt: "Cóctel refrescante con hierbabuena y lima" },
+    { name: "Café cubano", description: "Espresso corto, intenso y servido al momento.", price: "$4", image: "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=240&q=80", alt: "Taza de café espresso recién servido" },
   ],
   Postres: [
-    { name: "Flan de coco", description: "Flan sedoso, caramelo oscuro y ralladura de lima.", price: "$8" },
-    { name: "Pastel de guayaba y queso", description: "Dulce de guayaba, queso crema y galleta de mantequilla.", price: "$9" },
-    { name: "Helado de mamey", description: "Helado artesanal, crumble de canela y sal marina.", price: "$7" },
+    { name: "Flan de coco", description: "Flan sedoso, caramelo oscuro y ralladura de lima.", price: "$8", image: "https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&w=240&q=80", alt: "Postre cremoso con caramelo y decoración de temporada" },
+    { name: "Pastel de guayaba y queso", description: "Dulce de guayaba, queso crema y galleta de mantequilla.", price: "$9", image: "https://images.unsplash.com/photo-1488477181946-6428a0291777?auto=format&fit=crop&w=240&q=80", alt: "Postre dulce servido en un plato claro" },
+    { name: "Helado de mamey", description: "Helado artesanal, crumble de canela y sal marina.", price: "$7", image: "https://images.unsplash.com/photo-1570197788417-0e82375c9371?auto=format&fit=crop&w=240&q=80", alt: "Helado artesanal servido en una copa" },
   ],
 };
 
@@ -253,9 +253,12 @@ export default function Home() {
             <div className="menu-items" role="tabpanel">
               {menuItems[activeCategory].map((item, index) => (
                 <article className="menu-item" key={item.name} style={{ animationDelay: `${index * 60}ms` }}>
-                  <div className="menu-item-top"><span className="menu-item-index">0{index + 1}</span><h3>{item.name}</h3><span className="menu-price">{item.price}</span></div>
-                  <p>{item.description}</p>
-                  {item.note && <span className="menu-item-note">{item.note}</span>}
+                  <img className="menu-item-thumb" src={item.image} alt={item.alt} loading="lazy" decoding="async" />
+                  <div className="menu-item-copy">
+                    <div className="menu-item-top"><span className="menu-item-index">0{index + 1}</span><h3>{item.name}</h3><span className="menu-price">{item.price}</span></div>
+                    <p>{item.description}</p>
+                    {item.note && <span className="menu-item-note">{item.note}</span>}
+                  </div>
                 </article>
               ))}
               <div className="menu-disclaimer">Precios orientativos · Consulta disponibilidad y alérgenos con nuestro equipo.</div>
