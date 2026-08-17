@@ -169,9 +169,28 @@ h1 i, h2 i { color: var(--terracotta); font-style: italic; font-weight: 480; }
 .menu-items { min-width: 0; }
 .menu-item { display: grid; grid-template-columns: 82px minmax(0, 1fr); gap: 16px; padding: 2px 0 27px; border-bottom: 1px solid rgba(246, 240, 231, 0.17); animation: menu-reveal 400ms var(--ease-out) both; }
 .menu-item + .menu-item { padding-top: 27px; }
-.menu-item-thumb { width: 82px; height: 82px; object-fit: cover; border-radius: 0; background: #315669; filter: saturate(0.92); transition: transform 350ms var(--ease-out), filter 350ms var(--ease-out); }
-.menu-item:hover .menu-item-thumb { transform: scale(1.035); filter: saturate(1.08); }
+.menu-thumb-button { position: relative; display: block; width: 82px; height: 82px; padding: 0; background: #315669; border: 0; overflow: hidden; }
+.menu-item-thumb { width: 100%; height: 100%; object-fit: cover; filter: saturate(0.92); transition: transform 350ms var(--ease-out), filter 350ms var(--ease-out); }
+.thumb-zoom-icon { position: absolute; z-index: 1; right: 4px; bottom: 4px; display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; background: rgba(24, 59, 78, 0.85); color: var(--ivory); opacity: 0; transform: scale(0.8); transition: opacity 200ms var(--ease-out), transform 200ms var(--ease-out); }
+.menu-thumb-button:hover .menu-item-thumb { transform: scale(1.06); filter: saturate(1.08); }
+.menu-thumb-button:hover .thumb-zoom-icon { opacity: 1; transform: scale(1); }
 .menu-item-copy { min-width: 0; }
+
+.lightbox-overlay { position: fixed; z-index: 100; inset: 0; display: flex; align-items: center; justify-content: center; padding: 20px; background: rgba(12, 31, 41, 0.85); backdrop-filter: blur(12px); animation: lightbox-fade 250ms var(--ease-out) both; }
+.lightbox-dialog { position: relative; width: min(100%, 540px); background: var(--paper); color: var(--ink); box-shadow: 0 25px 50px rgba(0, 0, 0, 0.35); animation: lightbox-zoom 300ms var(--ease-out) both; }
+.lightbox-close { position: absolute; z-index: 2; top: 14px; right: 14px; display: inline-flex; align-items: center; justify-content: center; width: 38px; height: 38px; border: 1px solid rgba(24, 59, 78, 0.2); background: var(--ivory); color: var(--ink); transition: background 180ms var(--ease-out), color 180ms var(--ease-out); }
+.lightbox-close:hover { background: var(--terracotta); color: var(--ivory); border-color: var(--terracotta); }
+.lightbox-image-wrap { width: 100%; height: 330px; background: #223; overflow: hidden; }
+.lightbox-image-wrap img { width: 100%; height: 100%; object-fit: cover; }
+.lightbox-info { padding: 26px 30px 30px; display: flex; flex-direction: column; gap: 12px; }
+.lightbox-info-top { display: flex; align-items: baseline; justify-content: space-between; gap: 15px; }
+.lightbox-info h3 { margin: 0; font-family: "Fraunces", Georgia, serif; font-size: 28px; letter-spacing: -0.04em; }
+.lightbox-price { color: var(--terracotta); font-family: "Space Mono", monospace; font-size: 16px; font-weight: 700; }
+.lightbox-info p { margin: 0; color: #52636a; font-size: 14px; line-height: 1.6; }
+.lightbox-note { display: inline-block; color: var(--terracotta); font-family: "Space Mono", monospace; font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; }
+
+@keyframes lightbox-fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes lightbox-zoom { from { opacity: 0; transform: scale(0.96) translateY(8px); } to { opacity: 1; transform: scale(1) translateY(0); } }
 .menu-item-top { display: grid; grid-template-columns: 31px minmax(0, 1fr) auto; align-items: baseline; gap: 10px; }
 .menu-item-index { color: var(--terracotta); font-family: "Space Mono", monospace; font-size: 10px; }
 .menu-item h3 { margin: 0; color: var(--ivory); font-size: 25px; letter-spacing: -0.04em; }
@@ -385,7 +404,11 @@ h1 i, h2 i { color: var(--terracotta); font-style: italic; font-weight: 480; }
   .hero-image-wrap { height: 390px; }
   .vertical-seal { left: -28px; transform: rotate(-90deg) translateX(-42%); }
   .menu-item { grid-template-columns: 65px minmax(0, 1fr); gap: 12px; }
-  .menu-item-thumb { width: 65px; height: 65px; }
+  .menu-thumb-button { width: 65px; height: 65px; }
+  .lightbox-dialog { width: 100%; margin: 15px; }
+  .lightbox-image-wrap { height: 260px; }
+  .lightbox-info { padding: 20px; }
+  .lightbox-info h3 { font-size: 24px; }
   .menu-item-top { grid-template-columns: 25px minmax(0, 1fr) auto; }
   .menu-item h3 { font-size: 22px; }
   .menu-item p, .menu-item-note { margin-left: 35px; }

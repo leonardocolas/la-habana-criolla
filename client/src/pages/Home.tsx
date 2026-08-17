@@ -131,6 +131,15 @@ export default function Home() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [galleryIndex, setGalleryIndex] = useState(0);
   const [galleryPaused, setGalleryPaused] = useState(false);
+  const [lightboxItem, setLightboxItem] = useState<{ name: string; description: string; price: string; note?: string; image: string; alt: string } | null>(null);
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setLightboxItem(null);
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
 
   useEffect(() => {
     if (galleryPaused) return;
@@ -253,7 +262,10 @@ export default function Home() {
             <div className="menu-items" role="tabpanel">
               {menuItems[activeCategory].map((item, index) => (
                 <article className="menu-item" key={item.name} style={{ animationDelay: `${index * 60}ms` }}>
-                  <img className="menu-item-thumb" src={item.image} alt={item.alt} loading="lazy" decoding="async" />
+                  <button className="menu-thumb-button" type="button" onClick={() => setLightboxItem(item)} aria-label={`Ampliar imagen de ${item.name}`}>
+                    <img className="menu-item-thumb" src={item.image} alt={item.alt} loading="lazy" decoding="async" />
+                    <span className="thumb-zoom-icon"><ArrowUpRight size={14} /></span>
+                  </button>
                   <div className="menu-item-copy">
                     <div className="menu-item-top"><span className="menu-item-index">0{index + 1}</span><h3>{item.name}</h3><span className="menu-price">{item.price}</span></div>
                     <p>{item.description}</p>
@@ -413,6 +425,25 @@ export default function Home() {
       </main>
 
       <footer className="site-footer"><span>© 2026 La Habana Criolla</span><span className="footer-center">Cocina · Mesa · Barrio</span><a href="#inicio">Volver arriba <ArrowUpRight size={14} /></a></footer>
+
+      {lightboxItem && (
+        <div className="lightbox-overlay" role="dialog" aria-modal="true" aria-label={`Vista ampliada de ${lightboxItem.name}`} onClick={() => setLightboxItem(null)}>
+          <div className="lightbox-dialog" onClick={(e) => e.stopPropagation()}>
+            <button className="lightbox-close" type="button" onClick={() => setLightboxItem(null)} aria-label="Cerrar vista ampliada"><X size={22} /></button>
+            <div className="lightbox-image-wrap">
+              <img src={lightboxItem.image} alt={lightboxItem.alt} />
+            </div>
+            <div className="lightbox-info">
+              <div className="lightbox-info-top">
+                <h3>{lightboxItem.name}</h3>
+                <span className="lightbox-price">{lightboxItem.price}</span>
+              </div>
+              <p>{lightboxItem.description}</p>
+              {lightboxItem.note && <span className="lightbox-note">{lightboxItem.note}</span>}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
