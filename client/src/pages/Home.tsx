@@ -23,6 +23,7 @@ import {
 import { toast } from "sonner";
 
 type MenuCategory = "Entrantes" | "Fuertes" | "Bebidas" | "Postres";
+type DietaryProfile = "vegan" | "diabetes" | "hypertension";
 
 const menuItems: Record<MenuCategory, { name: string; description: string; price: string; note?: string }[]> = {
   Entrantes: [
@@ -53,6 +54,39 @@ const categories: { id: MenuCategory; icon: typeof UtensilsCrossed }[] = [
   { id: "Bebidas", icon: Wine },
   { id: "Postres", icon: Leaf },
 ];
+
+const dietaryProfiles: Record<DietaryProfile, { title: string; subtitle: string; summary: string; recommendations: { name: string; desc: string; tip: string }[] }> = {
+  vegan: {
+    title: "Opciones veganas y de origen vegetal",
+    subtitle: "Sin carnes, lácteos ni caldos animales",
+    summary: "Nuestra cocina criolla puede disfrutarse sin productos de origen animal seleccionando ingredientes frescos y preparando sofritos basados exclusivamente en aceite vegetal, ajo, cebolla, pimientos y especias naturales.",
+    recommendations: [
+      { name: "Yuca con mojo vegetal", desc: "Yuca tierna acompañada de mojo de naranja agria, ajo y aceite de oliva.", tip: "Pedir sin manteca ni grasa animal añadida." },
+      { name: "Arroz congrí con vegetales y plátano maduro", desc: "Frijol negro cocinado con especias criollas, arroz blanco y plátano maduro frito.", tip: "Verificar con el equipo que el sofrito del frijol no incluya embutidos." },
+      { name: "Ensalada de temporada con aguacate", desc: "Hojas frescas, tomate, cebolla morada y aguacate alimonado.", tip: "Aliño ligero de aceite de oliva virgen extra y limón." },
+    ],
+  },
+  diabetes: {
+    title: "Orientación para control de carbohidratos (Diabetes)",
+    subtitle: "Priorizando fibra, proteínas magras y porciones equilibradas",
+    summary: "Para quienes manejan sus niveles de glucosa, sugerimos equilibrar los acompañamientos con porciones moderadas de carbohidratos y optar por preparaciones a la parrilla o hervidas, consultando siempre los ingredientes dulces de las salsas.",
+    recommendations: [
+      { name: "Lechón asado magro o pollo a la plancha", desc: "Carnes marinadas en cítricos y ajo, cocinadas sin azúcares añadidos.", tip: "Acompañar con vegetales salteados en lugar de raciones grandes de arroz." },
+      { name: "Yuca o plátano en porción moderada", desc: "Tubérculos tradicionales cubanos preparados de forma casera.", tip: "Controlar la porción y combinar siempre con proteínas y fibra para una absorción gradual." },
+      { name: "Guarapo sin azúcar o infusión de hierbabuena", desc: "Bebidas refrescantes naturales sin edulcorantes artificiales pesados.", tip: "Evitar almíbares comerciales y azúcares refinados añadidos." },
+    ],
+  },
+  hypertension: {
+    title: "Recomendaciones bajas en sodio (Hipertensión)",
+    subtitle: "Cuidando el contenido de sal y potenciando hierbas aromáticas",
+    summary: "Adaptamos nuestros platos reduciendo el uso de sal de mesa y sustituyéndola por condimentos naturales como el orégano criollo, el comino, el ajo, la cebolla y el jugo fresco de naranja agria y limón.",
+    recommendations: [
+      { name: "Carnes blancas o res con especias naturales", desc: "Preparaciones donde el sabor proviene del comino, el laurel y los cítricos.", tip: "Solicitar explícitamente a nuestro equipo la preparación con bajo contenido de sodio." },
+      { name: "Arroz blanco e hortalizas al vapor", desc: "Guarniciones sencillas preparadas con aceite de oliva y hierbas.", tip: "Evitar caldos concentrados comerciales en la cocción del arroz." },
+      { name: "Agua con limón o limonada sin exceso de sodio", desc: "Bebidas hidratantes naturales.", tip: "Refrescantes y seguras para mantener una dieta equilibrada." },
+    ],
+  },
+};
 
 const gallerySlides = [
   {
@@ -93,6 +127,7 @@ const scrollToSection = (id: string) => {
 
 export default function Home() {
   const [activeCategory, setActiveCategory] = useState<MenuCategory>("Entrantes");
+  const [activeDietary, setActiveDietary] = useState<DietaryProfile>("vegan");
   const [mobileOpen, setMobileOpen] = useState(false);
   const [galleryIndex, setGalleryIndex] = useState(0);
   const [galleryPaused, setGalleryPaused] = useState(false);
@@ -131,6 +166,7 @@ export default function Home() {
           <a href="#cocina" onClick={() => setMobileOpen(false)}>La cocina</a>
           <a href="#carta" onClick={() => setMobileOpen(false)}>La carta</a>
           <a href="#galeria" onClick={() => setMobileOpen(false)}>Galería</a>
+          <a href="#dietas" onClick={() => setMobileOpen(false)}>Dietas especiales</a>
           <a href="#historia" onClick={() => setMobileOpen(false)}>La casa</a>
           <a href="#visitanos" onClick={() => setMobileOpen(false)}>Visítanos</a>
         </nav>
@@ -273,6 +309,49 @@ export default function Home() {
                 ))}
               </div>
               <span>Usa las flechas o desliza para explorar</span>
+            </div>
+          </div>
+        </section>
+
+        <section id="dietas" className="dietary-section section-padding">
+          <div className="dietary-heading">
+            <div>
+              <p className="eyebrow"><span className="eyebrow-line" /> Bienestar y cocina consciente</p>
+              <h2>Opciones para cada <i>necesidad.</i></h2>
+            </div>
+            <p>Creemos que comer sabroso no debe excluir a nadie. Consulta nuestras sugerencias para dietas veganas, control de glucosa e hipertensión.</p>
+          </div>
+          <div className="dietary-tabs" role="tablist" aria-label="Perfiles dietéticos">
+            <button className={`dietary-tab ${activeDietary === "vegan" ? "is-active" : ""}`} onClick={() => setActiveDietary("vegan")} role="tab" aria-selected={activeDietary === "vegan"}>
+              <span>Vegano y Vegetal</span>
+            </button>
+            <button className={`dietary-tab ${activeDietary === "diabetes" ? "is-active" : ""}`} onClick={() => setActiveDietary("diabetes")} role="tab" aria-selected={activeDietary === "diabetes"}>
+              <span>Diabetes (Glucosa)</span>
+            </button>
+            <button className={`dietary-tab ${activeDietary === "hypertension" ? "is-active" : ""}`} onClick={() => setActiveDietary("hypertension")} role="tab" aria-selected={activeDietary === "hypertension"}>
+              <span>Hipertensión (Sodio)</span>
+            </button>
+          </div>
+          <div className="dietary-content" role="tabpanel">
+            <div className="dietary-overview">
+              <h3>{dietaryProfiles[activeDietary].title}</h3>
+              <p className="dietary-subtitle">{dietaryProfiles[activeDietary].subtitle}</p>
+              <p>{dietaryProfiles[activeDietary].summary}</p>
+            </div>
+            <div className="dietary-list">
+              {dietaryProfiles[activeDietary].recommendations.map((rec, idx) => (
+                <div className="dietary-card" key={rec.name} style={{ animationDelay: `${idx * 50}ms` }}>
+                  <span className="dietary-index">0{idx + 1}</span>
+                  <div className="dietary-card-body">
+                    <h4>{rec.name}</h4>
+                    <p>{rec.desc}</p>
+                    <span className="dietary-tip">Sugerencia al pedir: {rec.tip}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div className="dietary-notice">
+              <span>⚠ Nota importante de cocina:</span> Preparamos cada plato con cuidado, pero nuestra cocina maneja alérgenos y condimentos tradicionales. Por favor, informa a nuestro equipo sobre cualquier condición estricta de salud al hacer tu reserva para que podamos adaptarnos.
             </div>
           </div>
         </section>

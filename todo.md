@@ -1,8 +1,7 @@
-# Pendientes — Galería carrusel
+# Pendientes — Sugerencias alimentarias especiales
 
-- [x] Definir la estructura editorial de la galería y sus categorías visuales.
-- [x] Integrar imágenes de ambiente y platos principales populares.
-- [x] Implementar controles anterior/siguiente, indicadores y navegación por teclado.
-- [x] Añadir adaptación responsive y estados de interacción coherentes con la marca.
-- [x] Verificar TypeScript, compilación y apariencia en escritorio y móvil.
-- [x] Guardar un checkpoint y entregar la nueva versión.
+- [ ] Definir las directrices para clientes veganos, con diabetes o con hipertensión con enfoque de seguridad culinaria.
+- [ ] Integrar un componente interactivo con pestañas de orientación en la página principal.
+- [ ] Actualizar la navegación superior para incluir un enlace a las sugerencias.
+- [ ] Verificar TypeScript, compilación y apariencia responsive en dispositivos móviles y de escritorio.
+- [ ] Guardar checkpoint y entregar el resultado final.
