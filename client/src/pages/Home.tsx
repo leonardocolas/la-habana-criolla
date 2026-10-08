@@ -4,11 +4,12 @@
  */
 import { useEffect, useState } from "react";
 import {
-  ArrowDownRight,
-  ArrowUpRight,
+  ArrowUp,
   CalendarDays,
+  ChevronLeft,
   ChevronRight,
   Clock3,
+  Expand,
   Facebook,
   Flame,
   Instagram,
@@ -90,10 +91,10 @@ const dietaryProfiles: Record<DietaryProfile, { title: string; subtitle: string;
 
 const gallerySlides = [
   {
-    image: "/manus-storage/la-habana-criolla-hero_82bafe20.jpg",
+    image: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=1500&q=85",
     eyebrow: "La mesa",
     title: "Todo empieza cuando llega el primer plato.",
-    alt: "Mesa criolla cubana con ropa vieja, arroz congrí y tostones",
+    alt: "Mesa de restaurante con platos servidos para compartir",
   },
   {
     image: "https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=1500&q=85",
@@ -132,6 +133,33 @@ export default function Home() {
   const [galleryIndex, setGalleryIndex] = useState(0);
   const [galleryPaused, setGalleryPaused] = useState(false);
   const [lightboxItem, setLightboxItem] = useState<{ name: string; description: string; price: string; note?: string; image: string; alt: string } | null>(null);
+  const [activeSection, setActiveSection] = useState("inicio");
+
+  // Scrollspy: el navbar señala la sección visible mientras se hace scroll.
+  useEffect(() => {
+    const ids = ["cocina", "carta", "galeria", "dietas", "historia", "visitanos"];
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) setActiveSection(entry.target.id);
+        });
+      },
+      { rootMargin: "-40% 0px -55% 0px" }
+    );
+    ids.forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) observer.observe(el);
+    });
+    return () => observer.disconnect();
+  }, []);
+  // Si el usuario prefiere movimiento reducido, hero con imagen fija en vez de vídeo.
+  const reduceMotion =
+    typeof window !== "undefined" &&
+    typeof window.matchMedia === "function" &&
+    window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  // Póster/fallback del hero: imagen remota que funciona sin /manus-storage.
+  const heroPoster =
+    "https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=1100&q=85";
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -162,7 +190,7 @@ export default function Home() {
   };
 
   return (
-    <div className="site-shell min-h-screen overflow-x-hidden">
+    <div className="site-shell min-h-screen">
       <header className="site-header" aria-label="Navegación principal">
         <a className="brand-lockup" href="#inicio" aria-label="La Habana Criolla, inicio">
           <img className="brand-mark" src="/manus-storage/la-habana-criolla-mark_ab69f6e3.png" alt="" onError={(event) => { event.currentTarget.style.display = "none"; }} />
@@ -171,20 +199,20 @@ export default function Home() {
             <em>Criolla</em>
           </span>
         </a>
-        <nav className={`main-nav ${mobileOpen ? "is-open" : ""}`}>
-          <a href="#cocina" onClick={() => setMobileOpen(false)}>La cocina</a>
-          <a href="#carta" onClick={() => setMobileOpen(false)}>La carta</a>
-          <a href="#galeria" onClick={() => setMobileOpen(false)}>Galería</a>
-          <a href="#dietas" onClick={() => setMobileOpen(false)}>Dietas especiales</a>
-          <a href="#historia" onClick={() => setMobileOpen(false)}>La casa</a>
-          <a href="#visitanos" onClick={() => setMobileOpen(false)}>Visítanos</a>
+        <nav className={`main-nav ${mobileOpen ? "is-open" : ""}`} aria-label="Secciones">
+          <a href="#cocina" className={activeSection === "cocina" ? "is-active" : ""} aria-current={activeSection === "cocina" ? "true" : undefined} onClick={() => setMobileOpen(false)}>La cocina</a>
+          <a href="#carta" className={activeSection === "carta" ? "is-active" : ""} aria-current={activeSection === "carta" ? "true" : undefined} onClick={() => setMobileOpen(false)}>La carta</a>
+          <a href="#galeria" className={activeSection === "galeria" ? "is-active" : ""} aria-current={activeSection === "galeria" ? "true" : undefined} onClick={() => setMobileOpen(false)}>Galería</a>
+          <a href="#dietas" className={activeSection === "dietas" ? "is-active" : ""} aria-current={activeSection === "dietas" ? "true" : undefined} onClick={() => setMobileOpen(false)}>Dietas especiales</a>
+          <a href="#historia" className={activeSection === "historia" ? "is-active" : ""} aria-current={activeSection === "historia" ? "true" : undefined} onClick={() => setMobileOpen(false)}>La casa</a>
+          <a href="#visitanos" className={activeSection === "visitanos" ? "is-active" : ""} aria-current={activeSection === "visitanos" ? "true" : undefined} onClick={() => setMobileOpen(false)}>Visítanos</a>
         </nav>
         <button className="header-cta" onClick={() => scrollToSection("reserva")}>
-          <CalendarDays size={16} strokeWidth={1.8} />
+          <CalendarDays size={16} strokeWidth={1.6} />
           Reservar una mesa
         </button>
         <button className="mobile-toggle" onClick={() => setMobileOpen((open) => !open)} aria-label={mobileOpen ? "Cerrar menú" : "Abrir menú"} aria-expanded={mobileOpen}>
-          {mobileOpen ? <X size={23} /> : <MenuIcon size={23} />}
+          {mobileOpen ? <X size={23} strokeWidth={1.6} /> : <MenuIcon size={23} strokeWidth={1.6} />}
         </button>
       </header>
 
@@ -195,14 +223,21 @@ export default function Home() {
             <h1>Hay platos que no se explican: <i>se ponen al centro.</i></h1>
             <p className="hero-lede">Una mesa cálida en medio de la ciudad. Recetas cubanas de fuego lento, ingredientes honestos y una sobremesa que siempre encuentra cinco minutos más.</p>
             <div className="hero-actions">
-              <button className="button button-dark" onClick={() => scrollToSection("carta")}>Mira la carta <ArrowDownRight size={17} /></button>
-              <button className="text-link" onClick={() => scrollToSection("historia")}>Conoce la casa <ArrowUpRight size={16} /></button>
+              <button className="button button-dark" onClick={() => scrollToSection("carta")}>Mira la carta</button>
+              <button className="text-link" onClick={() => scrollToSection("historia")}>Conoce la casa</button>
             </div>
             <div className="hero-footnote"><span className="stamp">HC</span><span>Comida con memoria.<br />Servida sin ceremonia.</span></div>
           </div>
           <div className="hero-visual">
             <div className="hero-image-wrap">
-              <img src="/manus-storage/la-habana-criolla-hero_82bafe20.jpg" alt="Mesa criolla cubana con ropa vieja, arroz congrí y tostones" />
+              {reduceMotion ? (
+                <img src={heroPoster} alt="Mesa criolla cubana con ropa vieja, arroz congrí y tostones" loading="eager" decoding="async" />
+              ) : (
+                <video className="hero-video" autoPlay muted loop playsInline preload="metadata" poster={heroPoster}>
+                  <source src="/video/hero.mp4" type="video/mp4" />
+                  <img src={heroPoster} alt="Mesa criolla cubana con ropa vieja, arroz congrí y tostones" loading="eager" decoding="async" />
+                </video>
+              )}
               <div className="image-caption"><span>La mesa,</span><strong>el mejor lugar para volver.</strong></div>
             </div>
             <div className="vertical-seal"><span>LA HABANA</span><strong>CRIOLLA</strong><span>COCINA · MESA · BARRIO</span></div>
@@ -254,7 +289,7 @@ export default function Home() {
                 <button key={id} className={`category-tab ${activeCategory === id ? "is-active" : ""}`} onClick={() => setActiveCategory(id)} role="tab" aria-selected={activeCategory === id}>
                   <span className="category-icon"><Icon size={18} strokeWidth={1.6} /></span>
                   <span>{id}</span>
-                  <ChevronRight size={16} className="category-arrow" />
+                  <ChevronRight size={16} strokeWidth={1.6} className="category-arrow" />
                 </button>
               ))}
               <div className="menu-note"><span className="note-mark">✳</span> Pregunta por nuestro<br />plato fuera de carta.</div>
@@ -263,8 +298,8 @@ export default function Home() {
               {menuItems[activeCategory].map((item, index) => (
                 <article className="menu-item" key={item.name} style={{ animationDelay: `${index * 60}ms` }}>
                   <button className="menu-thumb-button" type="button" onClick={() => setLightboxItem(item)} aria-label={`Ampliar imagen de ${item.name}`}>
-                    <img className="menu-item-thumb" src={item.image} alt={item.alt} loading="lazy" decoding="async" />
-                    <span className="thumb-zoom-icon"><ArrowUpRight size={14} /></span>
+                    <img className="menu-item-thumb" src={item.image} alt={item.alt} loading="lazy" decoding="async" width={82} height={82} />
+                    <span className="thumb-zoom-icon"><Expand size={14} strokeWidth={1.6} /></span>
                   </button>
                   <div className="menu-item-copy">
                     <div className="menu-item-top"><span className="menu-item-index">0{index + 1}</span><h3>{item.name}</h3><span className="menu-price">{item.price}</span></div>
@@ -277,7 +312,7 @@ export default function Home() {
             </div>
             <div className="menu-image-card">
               <img src="https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=1100&q=85" alt="Ropa vieja con arroz congrí y tostones" loading="lazy" />
-              <div className="menu-image-overlay"><span>Lo que huele<br />a casa.</span><ArrowUpRight size={20} /></div>
+              <div className="menu-image-overlay"><span>Lo que huele<br />a casa.</span></div>
             </div>
           </div>
         </section>
@@ -314,8 +349,8 @@ export default function Home() {
                   </figure>
                 ))}
               </div>
-              <button className="gallery-arrow gallery-arrow-prev" type="button" aria-label="Imagen anterior" onClick={() => moveGallery(-1)}><ArrowDownRight size={20} /></button>
-              <button className="gallery-arrow gallery-arrow-next" type="button" aria-label="Imagen siguiente" onClick={() => moveGallery(1)}><ArrowUpRight size={20} /></button>
+              <button className="gallery-arrow gallery-arrow-prev" type="button" aria-label="Imagen anterior" onClick={() => moveGallery(-1)}><ChevronLeft size={20} strokeWidth={1.6} /></button>
+              <button className="gallery-arrow gallery-arrow-next" type="button" aria-label="Imagen siguiente" onClick={() => moveGallery(1)}><ChevronRight size={20} strokeWidth={1.6} /></button>
             </div>
             <div className="gallery-controls">
               <div className="gallery-dots" role="tablist" aria-label="Seleccionar imagen de la galería">
@@ -381,7 +416,7 @@ export default function Home() {
             <h2>De la receta de la abuela a tu <i>mesa.</i></h2>
             <p>La Habana Criolla nació de una libreta con manchas de sofrito y de la convicción de que la cocina más honesta es la que se comparte sin hacer demasiado ruido.</p>
             <p>Respetamos las bases —el mojo, el congrí, el fuego, el dulce de guayaba— y dejamos que el día nos diga qué poner al plato.</p>
-            <button className="text-link text-link-dark" onClick={() => scrollToSection("visitanos")}>Ven a conocerla <ArrowUpRight size={16} /></button>
+            <button className="text-link text-link-dark" onClick={() => scrollToSection("visitanos")}>Ven a conocerla</button>
           </div>
         </section>
 
@@ -394,7 +429,7 @@ export default function Home() {
           <div className="voices-empty-state">
             <Quote size={30} strokeWidth={1.2} />
             <div><strong>Opiniones verificadas próximamente</strong><span>Cuando nos visites, cuéntanos qué plato se quedó contigo.</span></div>
-            <button className="button button-outline" onClick={() => scrollToSection("reserva")}>Escríbenos <ArrowUpRight size={16} /></button>
+            <button className="button button-outline" onClick={() => scrollToSection("reserva")}>Escríbenos</button>
           </div>
         </section>
 
@@ -403,13 +438,13 @@ export default function Home() {
             <p className="eyebrow eyebrow-light"><span className="eyebrow-line" /> Ven a la mesa</p>
             <h2>Guarda un lugar<br />para la <i>sobremesa.</i></h2>
             <p>Cuéntanos cuándo vienes y cuántos son. Para grupos grandes o celebraciones, escríbenos directamente.</p>
-            <div className="hours-row"><Clock3 size={18} strokeWidth={1.5} /><span>Martes — Domingo<br /><strong>12:00 — 23:00</strong></span></div>
+            <div className="hours-row"><Clock3 size={18} strokeWidth={1.6} /><span>Martes — Domingo<br /><strong>12:00 — 23:00</strong></span></div>
           </div>
           <form className="reservation-form" onSubmit={handleReservation}>
             <label>Tu nombre<input required name="name" placeholder="Cómo te llamamos" /></label>
             <div className="form-row"><label>Fecha<input required name="date" type="date" /></label><label>Personas<select required name="guests" defaultValue="2"><option value="2">2 personas</option><option value="3">3 personas</option><option value="4">4 personas</option><option value="5">5 personas</option><option value="6">6+ personas</option></select></label></div>
             <label>Algo que debamos saber<textarea name="message" rows={2} placeholder="Una celebración, una alergia, una ventana favorita…" /></label>
-            <button className="button button-light" type="submit">Solicitar reserva <ArrowUpRight size={17} /></button>
+            <button className="button button-light" type="submit">Solicitar reserva</button>
             <span className="form-note">La solicitud no queda confirmada hasta recibir nuestra respuesta.</span>
           </form>
         </section>
@@ -417,19 +452,19 @@ export default function Home() {
         <section id="visitanos" className="visit-section section-padding">
           <div className="visit-statement"><span className="stamp stamp-large">HC</span><h2>Nos vemos<br /><i>en la mesa.</i></h2></div>
           <div className="visit-details">
-            <div className="detail-block"><MapPin size={20} strokeWidth={1.4} /><div><span>Estamos en</span><strong>Patio del Barrio, 14<br />La Habana Criolla</strong></div></div>
-            <div className="detail-block"><Clock3 size={20} strokeWidth={1.4} /><div><span>Horario</span><strong>Martes a domingo<br />12:00 — 23:00</strong></div></div>
-            <div className="social-row"><a href="#visitanos" aria-label="Instagram"><Instagram size={19} strokeWidth={1.6} /></a><a href="#visitanos" aria-label="Facebook"><Facebook size={19} strokeWidth={1.6} /></a><span>@lahabanacriolla</span></div>
+            <div className="detail-block"><MapPin size={20} strokeWidth={1.6} /><div><span>Estamos en</span><strong>Patio del Barrio, 14<br />La Habana Criolla</strong></div></div>
+            <div className="detail-block"><Clock3 size={20} strokeWidth={1.6} /><div><span>Horario</span><strong>Martes a domingo<br />12:00 — 23:00</strong></div></div>
+            <div className="social-row"><a href="#visitanos" aria-label="Instagram"><Instagram size={18} strokeWidth={1.6} /></a><a href="#visitanos" aria-label="Facebook"><Facebook size={18} strokeWidth={1.6} /></a><span>@lahabanacriolla</span></div>
           </div>
         </section>
       </main>
 
-      <footer className="site-footer"><span>© 2026 La Habana Criolla</span><span className="footer-center">Cocina · Mesa · Barrio</span><a href="#inicio">Volver arriba <ArrowUpRight size={14} /></a></footer>
+      <footer className="site-footer"><span>© 2026 La Habana Criolla</span><span className="footer-center">Cocina · Mesa · Barrio</span><a href="#inicio">Volver arriba <ArrowUp size={14} strokeWidth={1.6} /></a></footer>
 
       {lightboxItem && (
         <div className="lightbox-overlay" role="dialog" aria-modal="true" aria-label={`Vista ampliada de ${lightboxItem.name}`} onClick={() => setLightboxItem(null)}>
           <div className="lightbox-dialog" onClick={(e) => e.stopPropagation()}>
-            <button className="lightbox-close" type="button" onClick={() => setLightboxItem(null)} aria-label="Cerrar vista ampliada"><X size={22} /></button>
+            <button className="lightbox-close" type="button" onClick={() => setLightboxItem(null)} aria-label="Cerrar vista ampliada"><X size={22} strokeWidth={1.6} /></button>
             <div className="lightbox-image-wrap">
               <img src={lightboxItem.image} alt={lightboxItem.alt} />
             </div>
